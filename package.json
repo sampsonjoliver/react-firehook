@@ -13,6 +13,7 @@
     "@types/jest": "^23.3.9",
     "@types/node": "^10.12.2",
     "@types/react": "^16.4.18",
+    "create-react-app": "^2.1.1",
     "jest": "^23.6.0",
     "prettier": "^1.14.3",
     "ts-jest": "^23.10.4",
