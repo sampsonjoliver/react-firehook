@@ -8,11 +8,23 @@ export type FirehookDocData<T> = {
   metadata?: firestore.SnapshotMetadata;
 };
 
-export function useFirestoreDoc<T>(ref: firestore.DocumentReference) {
-  const [refData, setRefData] = useState<FirehookDocData<T>>(null);
+type Props = {
+  ref: firestore.DocumentReference;
+  onSubscribe?: () => void;
+  onDetach?: () => void;
+};
+
+export function useFirestoreDoc<T>({ ref, onSubscribe, onDetach }: Props) {
+  const [refData, setRefData] = useState<FirehookDocData<T>>({
+    isLoading: true
+  });
 
   useEffect(() => {
-    return ref.onSnapshot(doc => {
+    if (onSubscribe) {
+      onSubscribe();
+    }
+
+    const unsubscribe = ref.onSnapshot(doc => {
       const docData = doc.data() as T | undefined;
 
       setRefData({
@@ -22,9 +34,14 @@ export function useFirestoreDoc<T>(ref: firestore.DocumentReference) {
         metadata: doc.metadata
       });
     });
-  });
 
-  setRefData({ isLoading: true });
+    return () => {
+      if (onDetach) {
+        onDetach();
+      }
+      unsubscribe();
+    };
+  }, []);
 
   return refData;
 }

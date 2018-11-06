@@ -8,7 +8,7 @@ export type FirehookCollectionDoc<T> = {
 };
 
 export type FirehookCollectionData<T> = {
-  data: FirehookCollectionDoc<T>[];
+  data: Array<FirehookCollectionDoc<T>>;
   isEmpty?: boolean;
   isLoading: boolean;
   metadata?: firestore.SnapshotMetadata;
@@ -17,7 +17,10 @@ export type FirehookCollectionData<T> = {
 export function useFirestoreQuery<T>(
   ref: firestore.CollectionReference | firestore.Query
 ) {
-  const [refData, setRefData] = useState<FirehookCollectionData<T>>(null);
+  const [refData, setRefData] = useState<FirehookCollectionData<T>>({
+    data: [],
+    isLoading: true
+  });
 
   useEffect(() => {
     return ref.onSnapshot(it => {
@@ -30,16 +33,11 @@ export function useFirestoreQuery<T>(
 
       setRefData({
         data: docData,
-        isLoading: true,
+        isLoading: false,
         isEmpty: it.empty,
         metadata: it.metadata
       });
     });
-  });
-
-  setRefData({
-    data: [],
-    isLoading: true
   });
 
   return refData;
